@@ -1,0 +1,14 @@
+{
+  "project": "fast_note",
+  "platform": "ios",
+  "github": {
+    "owner": "kalees64",
+    "repo": "fast_note"
+  },
+  "ios": {},
+  "flutter": {
+    "version": "3.38.7"
+  },
+  "reactNative": {},
+  "mobai": {}
+}
