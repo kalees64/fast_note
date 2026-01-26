@@ -1,0 +1,45 @@
+name: fast_note
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.2.0
+  speech_to_text: ^7.3.0
+  permission_handler: ^11.0.0
+  intl: ^0.18.0
+  uuid: ^4.0.0
+  google_fonts: ^6.1.0
+  pdf: ^3.10.0
+  path_provider: ^2.1.1
+  open_file: ^3.3.2
+  printing: ^5.11.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.5
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/fast-note-logo.png"
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/fast-note-logo-padded.png"
+  android_12:
+    color: "#ffffff"
+    image: "assets/fast-note-logo-padded.png"
