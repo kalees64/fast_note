@@ -3,13 +3,21 @@ class Note {
   final String content;
   final DateTime createdAt;
 
-  Note({required this.id, required this.content, required this.createdAt});
+  final String? imagePath;
+
+  Note({
+    required this.id,
+    required this.content,
+    required this.createdAt,
+    this.imagePath,
+  });
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'content': content,
       'createdAt': createdAt.toIso8601String(),
+      'imagePath': imagePath,
     };
   }
 
@@ -18,6 +26,7 @@ class Note {
       id: json['id'],
       content: json['content'],
       createdAt: DateTime.parse(json['createdAt']),
+      imagePath: json['imagePath'],
     );
   }
 }

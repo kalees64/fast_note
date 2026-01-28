@@ -8,7 +8,12 @@ import '../widgets/note_card.dart';
 import '../widgets/search_bar_widget.dart';
 import '../utils/toast_helper.dart';
 import '../services/pdf_service.dart';
+
 import 'dart:developer';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'note_detail_screen.dart';
 
 enum SortOption { newest, oldest, alphabetical, exportPdf, deleteAll }
 
@@ -102,8 +107,39 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   // Refined listen logic
+  // Refined listen logic
   String _liveText = '';
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
+
+    if (image != null) {
+      // Save image to app directory to persist it
+      final directory = await getApplicationDocumentsDirectory();
+      final String fileName = "${const Uuid().v4()}.jpg";
+      final String localPath = "${directory.path}/$fileName";
+
+      await image.saveTo(localPath);
+
+      // Create Note
+      final newNote = Note(
+        id: const Uuid().v4(),
+        content: "Image Note", // Or empty string, or let user edit later
+        createdAt: DateTime.now(),
+        imagePath: localPath,
+      );
+
+      await _storageService.saveNote(newNote);
+      _loadNotes();
+
+      if (mounted) {
+        showTopToast(context, 'Image Saved!');
+      }
+    }
+  }
+
+  // Original "Hold to Record" handlers
   void _onListenPress() async {
     if (!_isListening) {
       bool available = await _speech.initialize();
@@ -118,6 +154,11 @@ class _HomeScreenState extends State<HomeScreen>
               _liveText = val.recognizedWords;
             });
           },
+          listenFor: const Duration(seconds: 300), // Max 5 mins
+          pauseFor: const Duration(seconds: 5), // Silence timeout
+          partialResults: true,
+          cancelOnError: true,
+          listenMode: stt.ListenMode.dictation,
         );
       }
     }
@@ -417,6 +458,16 @@ class _HomeScreenState extends State<HomeScreen>
                           itemBuilder: (context, index) {
                             return NoteCard(
                               note: _filteredNotes[index],
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NoteDetailScreen(
+                                      note: _filteredNotes[index],
+                                    ),
+                                  ),
+                                );
+                              },
                               onDelete: () =>
                                   _deleteNote(_filteredNotes[index].id),
                             );
@@ -431,13 +482,26 @@ class _HomeScreenState extends State<HomeScreen>
           Positioned(
             bottom: 30,
             right: 20,
-            child: FloatingActionButton.small(
-              // Reduced size
-              heroTag: 'edit_btn',
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF4A00E0),
-              onPressed: _showManualNoteDialog,
-              child: const Icon(Icons.edit),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FloatingActionButton.small(
+                  heroTag: 'camera_btn',
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFF4A00E0),
+                  onPressed: _pickImage,
+                  child: const Icon(Icons.camera_alt),
+                ),
+                const SizedBox(height: 16),
+                FloatingActionButton.small(
+                  // Reduced size
+                  heroTag: 'edit_btn',
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFF4A00E0),
+                  onPressed: _showManualNoteDialog,
+                  child: const Icon(Icons.edit),
+                ),
+              ],
             ),
           ),
         ],
